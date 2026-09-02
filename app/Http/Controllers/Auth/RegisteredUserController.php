@@ -46,6 +46,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        if (in_array($user->role, ['admin', 'technician'])) {
+            return redirect(route('tech.tickets.index', absolute: false));
+        }
+
+        return redirect(route('user.tickets.index', absolute: false));
     }
 }
