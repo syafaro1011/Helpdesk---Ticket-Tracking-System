@@ -41,10 +41,42 @@ class DatabaseSeeder extends Seeder
             'role' => 'technician',
         ]);
 
-        // Akun User / Karyawan
+        // Akun User / Karyawan 1
         User::create([
-            'name' => 'Andi Karyawan',
+            'name' => 'Andi (Staf Operasional)',
             'email' => 'andi@helpdesk.com',
+            'password' => Hash::make('password123'),
+            'role' => 'user',
+        ]);
+
+        // Akun User / Karyawan 2
+        User::create([
+            'name' => 'Dewi Rahma (Staf Keuangan)',
+            'email' => 'dewi@helpdesk.com',
+            'password' => Hash::make('password123'),
+            'role' => 'user',
+        ]);
+
+        // Akun User / Karyawan 3
+        User::create([
+            'name' => 'Rian Prasetyo (Staf HRD)',
+            'email' => 'rian@helpdesk.com',
+            'password' => Hash::make('password123'),
+            'role' => 'user',
+        ]);
+
+        // Akun User / Karyawan 4
+        User::create([
+            'name' => 'Maya Kartika (Staf Marketing)',
+            'email' => 'maya@helpdesk.com',
+            'password' => Hash::make('password123'),
+            'role' => 'user',
+        ]);
+
+        // Akun User / Karyawan 5
+        User::create([
+            'name' => 'Rudi Hermawan (Staf Logistik)',
+            'email' => 'rudi@helpdesk.com',
             'password' => Hash::make('password123'),
             'role' => 'user',
         ]);
