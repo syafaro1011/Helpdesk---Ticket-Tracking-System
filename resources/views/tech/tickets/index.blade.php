@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-                <h2 class="font-bold text-2xl text-gray-800 tracking-tight flex items-center gap-2">
+                <h2 class="font-bold text-xl sm:text-2xl text-gray-800 tracking-tight flex items-center gap-2">
                     <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
                     </svg>
@@ -48,11 +48,11 @@
             @endif
 
             <!-- KPI Metric Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-4 sm:p-5 hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Total Tiket Masuk</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">{{ $tickets->total() }}</p>
+                        <p class="text-xl sm:text-2xl font-bold tabular-nums text-gray-800 mt-1">{{ $tickets->total() }}</p>
                     </div>
                     <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,10 +61,10 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
+                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-4 sm:p-5 hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-blue-600">Belum Ditangani (Open)</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">
+                        <p class="text-xl sm:text-2xl font-bold tabular-nums text-gray-800 mt-1">
                             {{ $tickets->getCollection()->where('status', 'open')->count() }}
                         </p>
                     </div>
@@ -75,10 +75,10 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
+                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-4 sm:p-5 hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-amber-600">Dalam Pengerjaan</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">
+                        <p class="text-xl sm:text-2xl font-bold tabular-nums text-gray-800 mt-1">
                             {{ $tickets->getCollection()->where('status', 'in_progress')->count() }}
                         </p>
                     </div>
@@ -89,10 +89,10 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
+                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-4 sm:p-5 hover:shadow-md transition-shadow duration-200 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Selesai (Resolved)</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">
+                        <p class="text-xl sm:text-2xl font-bold tabular-nums text-gray-800 mt-1">
                             {{ $tickets->getCollection()->whereIn('status', ['resolved', 'closed'])->count() }}
                         </p>
                     </div>
@@ -114,32 +114,32 @@
                         Filter Status:
                     </span>
                     
-                    <div class="inline-flex rounded-lg border border-gray-200 p-1 bg-gray-50 text-xs">
-                        <a href="{{ route('tech.tickets.index') }}" 
-                            class="px-3 py-1 rounded-md font-semibold transition {{ !request('status') ? 'bg-white text-indigo-600 shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
+                    <div class="inline-flex max-w-full overflow-x-auto rounded-lg border border-gray-200 p-1 bg-gray-50 text-xs">
+                        <a href="{{ route('tech.tickets.index', array_filter(['q' => request('q')])) }}" 
+                            class="whitespace-nowrap px-3 py-1 rounded-md font-semibold transition {{ !request('status') ? 'bg-white text-indigo-600 shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
                             Semua
                         </a>
-                        <a href="{{ route('tech.tickets.index', ['status' => 'open']) }}" 
-                            class="px-3 py-1 rounded-md font-semibold transition {{ request('status') == 'open' ? 'bg-blue-600 text-white shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
+                        <a href="{{ route('tech.tickets.index', array_filter(['status' => 'open', 'q' => request('q')])) }}" 
+                            class="whitespace-nowrap px-3 py-1 rounded-md font-semibold transition {{ request('status') == 'open' ? 'bg-blue-600 text-white shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
                             OPEN
                         </a>
-                        <a href="{{ route('tech.tickets.index', ['status' => 'in_progress']) }}" 
-                            class="px-3 py-1 rounded-md font-semibold transition {{ request('status') == 'in_progress' ? 'bg-amber-500 text-white shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
+                        <a href="{{ route('tech.tickets.index', array_filter(['status' => 'in_progress', 'q' => request('q')])) }}" 
+                            class="whitespace-nowrap px-3 py-1 rounded-md font-semibold transition {{ request('status') == 'in_progress' ? 'bg-amber-500 text-white shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
                             IN PROGRESS
                         </a>
-                        <a href="{{ route('tech.tickets.index', ['status' => 'resolved']) }}" 
-                            class="px-3 py-1 rounded-md font-semibold transition {{ request('status') == 'resolved' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
+                        <a href="{{ route('tech.tickets.index', array_filter(['status' => 'resolved', 'q' => request('q')])) }}" 
+                            class="whitespace-nowrap px-3 py-1 rounded-md font-semibold transition {{ request('status') == 'resolved' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
                             RESOLVED
                         </a>
-                        <a href="{{ route('tech.tickets.index', ['status' => 'closed']) }}" 
-                            class="px-3 py-1 rounded-md font-semibold transition {{ request('status') == 'closed' ? 'bg-gray-600 text-white shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
+                        <a href="{{ route('tech.tickets.index', array_filter(['status' => 'closed', 'q' => request('q')])) }}" 
+                            class="whitespace-nowrap px-3 py-1 rounded-md font-semibold transition {{ request('status') == 'closed' ? 'bg-gray-600 text-white shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
                             CLOSED
                         </a>
                     </div>
                 </div>
 
                 @if(request('status'))
-                    <a href="{{ route('tech.tickets.index') }}" class="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-800 transition">
+                    <a href="{{ route('tech.tickets.index', array_filter(['q' => request('q')])) }}" class="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-800 transition">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -148,10 +148,43 @@
                 @endif
             </div>
 
+            <!-- Pencarian Tiket -->
+            <form method="GET" action="{{ route('tech.tickets.index') }}" id="ticket-search-form" class="flex flex-col sm:flex-row gap-2">
+                @if(request('status'))
+                    <input type="hidden" name="status" value="{{ request('status') }}">
+                @endif
+                <div class="relative flex-1">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    <input type="text" name="q" id="ticket-search" value="{{ request('q') }}" placeholder="Cari kode tiket, judul kendala, atau nama pelapor..." autocomplete="off"
+                        {{ request('q') ? 'autofocus' : '' }}
+                        class="block w-full rounded-lg border-gray-300 shadow-2xs focus:border-indigo-500 focus:ring-indigo-500 text-xs py-2.5 pl-9 pr-9">
+                    <span id="ticket-search-loading" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-indigo-500">
+                        <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                    </span>
+                </div>
+                <div class="flex gap-2">
+                    <button type="submit"
+                        class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition">
+                        Cari
+                    </button>
+                    @if(request('q'))
+                        <a href="{{ route('tech.tickets.index', array_filter(['status' => request('status')])) }}"
+                            class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg shadow-2xs transition">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+
             <!-- Tabel Daftar Tiket Masuk -->
             <div class="bg-white rounded-xl border border-gray-200/80 shadow-xs overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table id="ticket-table" class="w-full min-w-[960px] text-left border-collapse transition-opacity duration-150">
                         <thead>
                             <tr class="border-b border-gray-200/80 bg-gray-50/80 text-gray-500 uppercase text-xs tracking-wider">
                                 <th class="py-3.5 px-4 font-semibold">Kode Tiket</th>
@@ -164,7 +197,7 @@
                                 <th class="py-3.5 px-4 font-semibold text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody id="ticket-rows" class="divide-y divide-gray-100">
                             @forelse($tickets as $ticket)
                                 <tr class="hover:bg-gray-50/50 transition-colors duration-150 text-xs">
                                     <!-- Kode Tiket -->
@@ -277,7 +310,7 @@
                                                 </svg>
                                             </div>
                                             <h4 class="font-semibold text-gray-800 text-sm">Tidak Ada Tiket</h4>
-                                            <p class="text-xs text-gray-500">Tidak ada tiket yang cocok dengan kriteria filter ini.</p>
+                                            <p class="text-xs text-gray-500">{{ request('q') ? 'Tidak ada tiket yang cocok dengan pencarian "' . request('q') . '".' : 'Tidak ada tiket yang cocok dengan kriteria filter ini.' }}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -286,13 +319,110 @@
                     </table>
                 </div>
 
-                @if($tickets->hasPages())
-                    <div class="px-6 py-4 border-t border-gray-200/80 bg-gray-50/50">
-                        {{ $tickets->links() }}
-                    </div>
-                @endif
+                <div id="ticket-pagination" class="px-6 py-4 border-t border-gray-200/80 bg-gray-50/50" @if(!$tickets->hasPages()) style="display: none;" @endif>
+                    {{ $tickets->links() }}
+                </div>
             </div>
 
         </div>
     </div>
+
+    <script>
+    (function () {
+        const form = document.getElementById('ticket-search-form');
+        if (!form) return;
+        const input = document.getElementById('ticket-search');
+        const rows = document.getElementById('ticket-rows');
+        const table = document.getElementById('ticket-table');
+        const pagination = document.getElementById('ticket-pagination');
+        const loading = document.getElementById('ticket-search-loading');
+        let timer = null;
+
+        function esc(s) {
+            return String(s ?? '').replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function priorityBadge(p) {
+            if (p === 'urgent') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-rose-100 text-rose-700 font-bold animate-pulse">URGENT</span>';
+            if (p === 'high') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-orange-100 text-orange-700 font-semibold">HIGH</span>';
+            if (p === 'medium') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-sky-100 text-sky-700">MEDIUM</span>';
+            return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-slate-100 text-slate-600">LOW</span>';
+        }
+
+        function statusBadge(s) {
+            if (s === 'open') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700 border border-blue-200 font-medium">OPEN</span>';
+            if (s === 'in_progress') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-amber-50 text-amber-700 border border-amber-200 font-medium">IN PROGRESS</span>';
+            if (s === 'resolved') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">RESOLVED</span>';
+            return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-gray-100 text-gray-600 border border-gray-200 font-medium">CLOSED</span>';
+        }
+
+        function techCell(name) {
+            if (name) {
+                return '<div class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-800 rounded text-xs font-medium"><span>' + esc(name) + '</span></div>';
+            }
+            return '<span class="inline-flex items-center px-2 py-0.5 bg-rose-50 border border-rose-100 text-rose-600 rounded text-xs font-medium italic">Belum Ada PJ</span>';
+        }
+
+        function rowHtml(t) {
+            return '<tr class="hover:bg-gray-50/50 transition-colors duration-150 text-xs">'
+                + '<td class="py-3.5 px-4 font-mono font-bold text-indigo-600 whitespace-nowrap"><a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-100 transition">#' + esc(t.ticket_code) + '</a></td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center font-bold text-xs border border-gray-200">' + esc(t.user_name.charAt(0).toUpperCase()) + '</div><div><div class="font-semibold text-gray-900">' + esc(t.user_name) + '</div><div class="text-[11px] text-gray-400">' + esc(t.created_at) + '</div></div></div></td>'
+                + '<td class="py-3.5 px-4 max-w-xs"><a href="' + t.show_url + '" class="font-semibold text-gray-900 hover:text-indigo-600 truncate block transition">' + esc(t.title) + '</a></td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap"><span class="inline-flex items-center text-xs font-medium text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded">' + esc(t.category_name) + '</span></td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap">' + priorityBadge(t.priority) + '</td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap">' + statusBadge(t.status) + '</td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap">' + techCell(t.technician_name) + '</td>'
+                + '<td class="py-3.5 px-4 text-center whitespace-nowrap"><a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded shadow-2xs transition"><span>Detail &amp; Handling</span><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></a></td>'
+                + '</tr>';
+        }
+
+        function emptyHtml(q) {
+            return '<tr><td colspan="8" class="py-12 px-4 text-center"><div class="max-w-xs mx-auto text-center space-y-3">'
+                + '<div class="w-12 h-12 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg></div>'
+                + '<h4 class="font-semibold text-gray-800 text-sm">Tidak Ada Tiket</h4>'
+                + '<p class="text-xs text-gray-500">' + (q ? 'Tidak ada tiket yang cocok dengan pencarian &quot;' + esc(q) + '&quot;.' : 'Tidak ada tiket yang cocok dengan kriteria filter ini.') + '</p>'
+                + '</div></td></tr>';
+        }
+
+        async function fetchPage(page) {
+            const params = new URLSearchParams(new FormData(form));
+            params.set('ajax', '1');
+            if (page) { params.set('page', page); } else { params.delete('page'); }
+            loading.classList.remove('hidden');
+            table.classList.add('opacity-50');
+            try {
+                const res = await fetch(form.action + '?' + params.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!res.ok) throw new Error('request failed');
+                const json = await res.json();
+                const q = params.get('q') || '';
+                rows.innerHTML = json.data.length ? json.data.map(rowHtml).join('') : emptyHtml(q);
+                pagination.innerHTML = json.pagination || '';
+                pagination.style.display = json.last_page > 1 ? '' : 'none';
+                const clean = new URLSearchParams(params);
+                clean.delete('ajax'); clean.delete('page');
+                if (json.current_page > 1) clean.set('page', json.current_page);
+                history.replaceState(null, '', form.action + (clean.toString() ? '?' + clean.toString() : ''));
+            } catch (e) {
+                form.submit();
+            } finally {
+                loading.classList.add('hidden');
+                table.classList.remove('opacity-50');
+            }
+        }
+
+        input.addEventListener('input', function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () { fetchPage(1); }, 400);
+        });
+
+        pagination.addEventListener('click', function (e) {
+            const a = e.target.closest('a');
+            if (!a) return;
+            e.preventDefault();
+            fetchPage(new URL(a.href).searchParams.get('page') || 1);
+        });
+    })();
+    </script>
 </x-app-layout>

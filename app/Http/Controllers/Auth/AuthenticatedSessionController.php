@@ -29,11 +29,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         $user = Auth::user();
 
-        if (in_array($user->role, ['admin', 'technician'])) {
-            return redirect()->intended(route('tech.tickets.index', absolute: false));
-        }
-
-        return redirect()->intended(route('user.tickets.index', absolute: false));
+        return redirect()->intended(route('home', absolute: false));
     }
 
     /**

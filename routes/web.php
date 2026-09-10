@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\TicketController;
@@ -11,6 +12,9 @@ Route::get('/', function () {
 
 // Route yang membutuhkan Autentikasi (Sudah Login)
 Route::middleware(['auth'])->group(function () {
+
+    // Halaman Beranda (semua role yang sudah login)
+    Route::get('/beranda', [HomeController::class, 'index'])->name('home');
 
     // Fitur User / Karyawan
     Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(function () {

@@ -12,12 +12,40 @@ use Illuminate\Support\Str;
 class TicketController extends Controller
 {
     // Menampilkan daftar tiket milik user yang sedang login
-    public function index()
+    public function index(Request $request)
     {
         $tickets = Ticket::with(['category', 'technician', 'logs.user'])
             ->where('user_id', auth()->id())
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $q = $request->q;
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('ticket_code', 'like', "%{$q}%")
+                        ->orWhere('title', 'like', "%{$q}%");
+                });
+            })
             ->latest()
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->boolean('ajax')) {
+            return response()->json([
+                'data' => $tickets->getCollection()->map(fn ($t) => [
+                    'ticket_code' => $t->ticket_code,
+                    'title' => $t->title,
+                    'description' => $t->description,
+                    'category_name' => $t->category->name ?? '-',
+                    'priority' => $t->priority,
+                    'status' => $t->status,
+                    'technician_name' => $t->technician->name ?? null,
+                    'created_at' => $t->created_at->format('d M Y, H:i'),
+                    'show_url' => route('user.tickets.show', $t->id),
+                ])->values(),
+                'pagination' => $tickets->links()->toHtml(),
+                'total' => $tickets->total(),
+                'current_page' => $tickets->currentPage(),
+                'last_page' => $tickets->lastPage(),
+            ]);
+        }
 
         return view('user.tickets.index', compact('tickets'));
     }
@@ -50,7 +78,7 @@ class TicketController extends Controller
         return redirect()->back()->with('success', 'Tanggapan/balasan Anda berhasil dikirim.');
     }
 
-    // Menampilkan form buat tiket baru
+    // CREATE
     public function create()
     {
         $categories = Category::all();

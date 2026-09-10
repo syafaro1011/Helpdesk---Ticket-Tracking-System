@@ -74,7 +74,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 <!-- Kolom Kiri: Content & Timeline Logs (2/3 Lebar) -->
-                <div class="lg:col-span-2 space-y-6">
+                <div class="lg:col-span-2 space-y-6 min-w-0">
 
                     <!-- Kartu Kendala Utama -->
                     <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-6 space-y-4">
@@ -83,7 +83,7 @@
                                 <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded border border-indigo-100">
                                     {{ $ticket->category->name }}
                                 </span>
-                                <h3 class="text-lg font-bold text-gray-900 mt-2">{{ $ticket->title }}</h3>
+                                <h3 class="text-lg font-bold text-gray-900 mt-2 break-words">{{ $ticket->title }}</h3>
                             </div>
                             <div>
                                 @if($ticket->priority == 'urgent')
@@ -218,7 +218,7 @@
                 </div>
 
                 <!-- Kolom Kanan: Action Sidebar (1/3 Lebar) -->
-                <div class="space-y-6">
+                <div class="space-y-6 min-w-0">
 
                     <!-- Kartu Informasi Status -->
                     <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-5 space-y-4">

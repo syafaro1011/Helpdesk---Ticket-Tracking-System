@@ -28,7 +28,39 @@ class TicketHandlingController extends Controller
             $query->where('status', $request->status);
         }
 
-        $tickets = $query->paginate(10);
+        // Pencarian berdasarkan kode atau judul tiket
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('ticket_code', 'like', "%{$q}%")
+                    ->orWhere('title', 'like', "%{$q}%")
+                    ->orWhereHas('user', function ($userQuery) use ($q) {
+                        $userQuery->where('name', 'like', "%{$q}%");
+                    });
+            });
+        }
+
+        $tickets = $query->paginate(10)->withQueryString();
+
+        if ($request->boolean('ajax')) {
+            return response()->json([
+                'data' => $tickets->getCollection()->map(fn ($t) => [
+                    'ticket_code' => $t->ticket_code,
+                    'title' => $t->title,
+                    'category_name' => $t->category->name ?? '-',
+                    'priority' => $t->priority,
+                    'status' => $t->status,
+                    'technician_name' => $t->technician->name ?? null,
+                    'user_name' => $t->user->name ?? '-',
+                    'created_at' => $t->created_at->format('d M Y, H:i'),
+                    'show_url' => route('tech.tickets.show', $t->id),
+                ])->values(),
+                'pagination' => $tickets->links()->toHtml(),
+                'total' => $tickets->total(),
+                'current_page' => $tickets->currentPage(),
+                'last_page' => $tickets->lastPage(),
+            ]);
+        }
 
         return view('tech.tickets.index', compact('tickets'));
     }
