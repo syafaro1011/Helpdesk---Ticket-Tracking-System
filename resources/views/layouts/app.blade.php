@@ -124,7 +124,7 @@
                             <li class="flex items-center min-w-0 shrink-0">
                                 @if(isset($crumb['url']))
                                     <a href="{{ $crumb['url'] }}"
-                                        class="text-slate-500 hover:text-indigo-600 font-medium transition">
+                                        class="text-slate-500 hover:text-sky-600 font-medium transition">
                                         {{ $crumb['label'] }}
                                     </a>
                                 @else
@@ -152,6 +152,51 @@
                 </div>
             </footer> -->
         </div>
+
+        {{-- Modal Konfirmasi Logout Global --}}
+        <x-modal name="confirm-logout" maxWidth="md" focusable>
+            <form method="POST" action="{{ route('logout') }}" class="p-6 sm:p-8 space-y-6">
+                @csrf
+
+                <div class="flex items-start gap-4">
+                    <div class="p-2.5 bg-amber-100 text-amber-600 rounded-xl shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0 space-y-1.5">
+                        <h2 class="font-bold text-gray-800 text-sm sm:text-base">
+                            {{ __('Keluar dari akun?') }}
+                        </h2>
+                        <p class="text-xs text-gray-500 leading-relaxed">
+                            {{ __('Sesi Anda akan diakhiri dan Anda harus masuk kembali untuk mengakses sistem.') }}
+                        </p>
+                        @auth
+                            <p class="text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 truncate">
+                                {{ Auth::user()->email }}
+                            </p>
+                        @endauth
+                    </div>
+                </div>
+
+                <div class="pt-5 border-t border-gray-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                    <button type="button" x-on:click="$dispatch('close')"
+                        class="inline-flex items-center justify-center w-full sm:w-auto px-5 py-2.5 rounded-lg border border-gray-300 font-semibold text-xs text-gray-700 hover:bg-gray-50 transition shadow-2xs">
+                        {{ __('Batal') }}
+                    </button>
+
+                    <button type="submit"
+                        class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs rounded-lg shadow-xs transition duration-150">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        {{ __('Ya, Keluar') }}
+                    </button>
+                </div>
+            </form>
+        </x-modal>
     </div>
 </body>
 

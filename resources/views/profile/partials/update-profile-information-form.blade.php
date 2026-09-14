@@ -33,7 +33,7 @@
                     </svg>
                     <div class="space-y-1">
                         <p class="text-xs text-amber-800 font-medium">Alamat email Anda belum terverifikasi.</p>
-                        <button form="send-verification" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 underline underline-offset-2 transition">
+                        <button form="send-verification" class="text-xs font-semibold text-sky-600 hover:text-sky-800 underline underline-offset-2 transition">
                             {{ __('Klik di sini untuk mengirim ulang email verifikasi.') }}
                         </button>
 
@@ -49,7 +49,7 @@
 
         <div class="pt-5 mt-2 border-t border-gray-100 flex flex-col-reverse sm:flex-row sm:items-center gap-3">
             <button type="submit"
-                class="inline-flex items-center justify-center w-full sm:w-auto gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-xs transition duration-150">
+                class="inline-flex items-center justify-center w-full sm:w-auto gap-2 px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-semibold text-xs rounded-lg shadow-xs transition duration-150">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>

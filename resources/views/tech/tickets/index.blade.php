@@ -8,7 +8,7 @@
                     </svg>
                     {{ __('Kelola Tiket Masuk (IT Support)') }}
                 </h2>
-                <p class="text-xs text-gray-500 mt-1">Pusat kontrol pemantauan dan penanganan tiket kendala IT pelapor</p>
+                <!-- <p class="text-xs text-gray-500 mt-1">Pusat kontrol pemantauan dan penanganan tiket kendala IT pelapor</p> -->
             </div>
             <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg shadow-2xs border border-gray-200 text-xs">
                 <span class="text-gray-500">Role:</span>
@@ -116,7 +116,7 @@
                     
                     <div class="inline-flex max-w-full overflow-x-auto rounded-lg border border-gray-200 p-1 bg-gray-50 text-xs">
                         <a href="{{ route('tech.tickets.index', array_filter(['q' => request('q')])) }}" 
-                            class="whitespace-nowrap px-3 py-1 rounded-md font-semibold transition {{ !request('status') ? 'bg-white text-indigo-600 shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
+                            class="whitespace-nowrap px-3 py-1 rounded-md font-semibold transition {{ !request('status') ? 'bg-white text-sky-600 shadow-2xs' : 'text-gray-600 hover:text-gray-900' }}">
                             Semua
                         </a>
                         <a href="{{ route('tech.tickets.index', array_filter(['status' => 'open', 'q' => request('q')])) }}" 
@@ -169,7 +169,7 @@
                 </div>
                 <div class="flex gap-2">
                     <button type="submit"
-                        class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition">
+                        class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg shadow-xs transition">
                         Cari
                     </button>
                     @if(request('q'))
@@ -222,7 +222,7 @@
 
                                     <!-- Judul Kendala (Truncated for Scannability) -->
                                     <td class="py-3.5 px-4 max-w-xs">
-                                        <a href="{{ route('tech.tickets.show', $ticket->id) }}" class="font-semibold text-gray-900 hover:text-indigo-600 truncate block transition" title="{{ $ticket->title }}">
+                                        <a href="{{ route('tech.tickets.show', $ticket->id) }}" class="font-semibold text-gray-900 hover:text-sky-600 truncate block transition" title="{{ $ticket->title }}">
                                             {{ $ticket->title }}
                                         </a>
                                     </td>
@@ -292,7 +292,7 @@
                                     <!-- Tombol Detail / Handling -->
                                     <td class="py-3.5 px-4 text-center whitespace-nowrap">
                                         <a href="{{ route('tech.tickets.show', $ticket->id) }}"
-                                            class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded shadow-2xs transition">
+                                            class="inline-flex items-center gap-1 px-3 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded shadow-2xs transition">
                                             <span>Detail & Handling</span>
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -369,12 +369,12 @@
             return '<tr class="hover:bg-gray-50/50 transition-colors duration-150 text-xs">'
                 + '<td class="py-3.5 px-4 font-mono font-bold text-indigo-600 whitespace-nowrap"><a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-100 transition">#' + esc(t.ticket_code) + '</a></td>'
                 + '<td class="py-3.5 px-4 whitespace-nowrap"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center font-bold text-xs border border-gray-200">' + esc(t.user_name.charAt(0).toUpperCase()) + '</div><div><div class="font-semibold text-gray-900">' + esc(t.user_name) + '</div><div class="text-[11px] text-gray-400">' + esc(t.created_at) + '</div></div></div></td>'
-                + '<td class="py-3.5 px-4 max-w-xs"><a href="' + t.show_url + '" class="font-semibold text-gray-900 hover:text-indigo-600 truncate block transition">' + esc(t.title) + '</a></td>'
+                + '<td class="py-3.5 px-4 max-w-xs"><a href="' + t.show_url + '" class="font-semibold text-gray-900 hover:text-sky-600 truncate block transition">' + esc(t.title) + '</a></td>'
                 + '<td class="py-3.5 px-4 whitespace-nowrap"><span class="inline-flex items-center text-xs font-medium text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded">' + esc(t.category_name) + '</span></td>'
                 + '<td class="py-3.5 px-4 whitespace-nowrap">' + priorityBadge(t.priority) + '</td>'
                 + '<td class="py-3.5 px-4 whitespace-nowrap">' + statusBadge(t.status) + '</td>'
                 + '<td class="py-3.5 px-4 whitespace-nowrap">' + techCell(t.technician_name) + '</td>'
-                + '<td class="py-3.5 px-4 text-center whitespace-nowrap"><a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded shadow-2xs transition"><span>Detail &amp; Handling</span><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></a></td>'
+                + '<td class="py-3.5 px-4 text-center whitespace-nowrap"><a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-3 py-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded shadow-2xs transition"><span>Detail &amp; Handling</span><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></a></td>'
                 + '</tr>';
         }
 

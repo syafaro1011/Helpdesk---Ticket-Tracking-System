@@ -10,7 +10,7 @@
                 class="w-8 h-8 rounded-lg object-cover shadow-sm shrink-0 group-hover:opacity-90 transition">
             <div class="overflow-hidden transition-all duration-300 ease-in-out"
                 :class="sidebarCollapsed ? 'lg:w-0 lg:opacity-0' : 'lg:w-auto lg:opacity-100'">
-                <span class="font-extrabold text-sm tracking-tight text-slate-800 group-hover:text-indigo-600 transition whitespace-nowrap">IT HELPDESK</span>
+                <span class="font-extrabold text-sm tracking-tight text-slate-800 group-hover:text-sky-600 transition whitespace-nowrap">IT HELPDESK</span>
                 <span class="block text-[10px] uppercase tracking-wider font-semibold text-slate-400 -mt-0.5 whitespace-nowrap">Ticket Tracking</span>
             </div>
         </a>
@@ -35,9 +35,9 @@
     <nav class="flex-1 px-2 space-y-1 overflow-y-auto">
         <a href="{{ route('home') }}" @click="sidebarOpen = false"
             class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                {{ request()->routeIs('home') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                {{ request()->routeIs('home') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
             title="Beranda" :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''">
-            <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('home') ? 'text-indigo-500' : 'text-slate-400' }}"
+            <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('home') ? 'text-sky-600' : 'text-slate-400' }}"
                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
@@ -49,9 +49,9 @@
         @if(auth()->user()->role === 'user')
             <a href="{{ route('user.tickets.index') }}" @click="sidebarOpen = false"
                 class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                    {{ request()->routeIs('user.tickets.index') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    {{ request()->routeIs('user.tickets.index') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                 title="Tiket Saya" :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''">
-                <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('user.tickets.index') ? 'text-indigo-500' : 'text-slate-400' }}"
+                <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('user.tickets.index') ? 'text-sky-600' : 'text-slate-400' }}"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
@@ -62,9 +62,9 @@
 
             <a href="{{ route('user.tickets.create') }}" @click="sidebarOpen = false"
                 class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                    {{ request()->routeIs('user.tickets.create') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    {{ request()->routeIs('user.tickets.create') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                 title="Buat Tiket" :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''">
-                <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('user.tickets.create') ? 'text-indigo-500' : 'text-slate-400' }}"
+                <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('user.tickets.create') ? 'text-sky-600' : 'text-slate-400' }}"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -76,9 +76,9 @@
         @if(in_array(auth()->user()->role, ['technician', 'admin']))
             <a href="{{ route('tech.tickets.index') }}" @click="sidebarOpen = false"
                 class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
-                    {{ request()->routeIs('tech.tickets.*') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    {{ request()->routeIs('tech.tickets.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                 title="Kelola Tiket" :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''">
-                <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('tech.tickets.*') ? 'text-indigo-500' : 'text-slate-400' }}"
+                <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('tech.tickets.*') ? 'text-sky-600' : 'text-slate-400' }}"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
@@ -104,7 +104,7 @@
                     <div class="flex-1 min-w-0 overflow-hidden transition-all duration-300 ease-in-out"
                         :class="sidebarCollapsed ? 'lg:w-0 lg:opacity-0 lg:invisible' : 'lg:w-auto lg:opacity-100 lg:visible'">
                         <span class="block text-sm font-semibold text-slate-700 truncate">{{ Auth::user()->name }}</span>
-                        <span class="block text-[10px] font-bold tracking-wider text-indigo-500 uppercase truncate">{{ Auth::user()->role }}</span>
+                        <span class="block text-[10px] font-bold tracking-wider text-sky-600 uppercase truncate">{{ Auth::user()->role }}</span>
                     </div>
                     <svg class="w-4 h-4 text-slate-400 shrink-0 transition-all duration-300 ease-in-out"
                         :class="sidebarCollapsed ? 'lg:opacity-0 lg:w-0 lg:invisible' : 'lg:opacity-100 lg:w-auto lg:visible'" fill="none"
@@ -128,18 +128,15 @@
                     {{ __('Pengaturan Profil') }}
                 </x-dropdown-link>
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-dropdown-link :href="route('logout')"
-                        onclick="event.preventDefault(); this.closest('form').submit();"
-                        class="flex items-center gap-2 text-xs text-rose-600 hover:bg-rose-50">
+                <x-dropdown-link href="#" x-data=""
+                    x-on:click.prevent="$dispatch('open-modal', 'confirm-logout')"
+                    class="flex items-center gap-2 text-xs text-rose-600 hover:bg-rose-50">
                         <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
                         {{ __('Keluar (Log Out)') }}
                     </x-dropdown-link>
-                </form>
             </x-slot>
         </x-dropdown>
     </div>

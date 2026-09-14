@@ -168,7 +168,7 @@
                         class="px-6 py-4 border-b border-gray-200/80 flex items-center justify-between bg-gray-50/50 gap-2">
                         <h3 class="font-bold text-gray-800 text-sm">Tiket Terbaru</h3>
                         <a href="{{ $isTech ? route('tech.tickets.index') : route('user.tickets.index') }}"
-                            class="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition shrink-0">
+                            class="inline-flex items-center gap-1 text-xs font-semibold text-sky-600 hover:text-sky-800 transition shrink-0">
                             Lihat Semua
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
@@ -203,7 +203,7 @@
                                         </td>
                                         <td class="py-3 px-4 max-w-xs">
                                             <a href="{{ $isTech ? route('tech.tickets.show', $ticket->id) : route('user.tickets.show', $ticket->id) }}"
-                                                class="font-semibold text-gray-900 hover:text-indigo-600 truncate block transition"
+                                                class="font-semibold text-gray-900 hover:text-sky-600 truncate block transition"
                                                 title="{{ $ticket->title }}">
                                                 {{ $ticket->title }}
                                             </a>
@@ -243,7 +243,7 @@
                                                 </p>
                                                 @if(!$isTech)
                                                     <a href="{{ route('user.tickets.create') }}"
-                                                        class="inline-flex items-center px-3.5 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition">
+                                                        class="inline-flex items-center px-3.5 py-1.5 bg-sky-600 text-white text-xs font-semibold rounded-lg hover:bg-sky-700 transition">
                                                         + Buat Tiket Sekarang
                                                     </a>
                                                 @endif
@@ -262,7 +262,7 @@
                         <h4 class="font-bold text-gray-800 text-sm border-b border-gray-100 pb-3">Aksi Cepat</h4>
                         @if(!$isTech)
                             <a href="{{ route('user.tickets.create') }}"
-                                class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+                                class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg shadow-sm transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
@@ -275,7 +275,7 @@
                             </a>
                         @else
                             <a href="{{ route('tech.tickets.index') }}"
-                                class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+                                class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg shadow-sm transition">
                                 Kelola Tiket Masuk
                             </a>
                             <a href="{{ route('tech.tickets.index', ['status' => 'open']) }}"
@@ -287,17 +287,15 @@
                             class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg shadow-sm transition">
                             Pengaturan Profil
                         </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit"
-                                class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-semibold rounded-lg shadow-sm transition">
+                        <button type="button" x-data=""
+                            x-on:click.prevent="$dispatch('open-modal', 'confirm-logout')"
+                            class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-semibold rounded-lg shadow-sm transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
                                 Keluar (Log Out)
                             </button>
-                        </form>
                     </div>
 
                     <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900">
