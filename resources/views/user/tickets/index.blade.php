@@ -3,15 +3,14 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h2 class="font-bold text-xl sm:text-2xl text-gray-800 tracking-tight flex items-center gap-2">
-                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z">
                         </path>
-                    </svg>
+                    </svg> -->
                     {{ __('Daftar Tiket Saya') }}
                 </h2>
-                <p class="text-xs text-gray-500 mt-1">Pantau status penanganan kendala IT dan pengajuan fasilitas Anda
-                </p>
+               
             </div>
             <a href="{{ route('user.tickets.create') }}"
                 class="inline-flex items-center justify-center w-full sm:w-auto px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition duration-150 gap-2">
@@ -263,16 +262,42 @@
                                         {{ $ticket->created_at->format('d M Y, H:i') }}
                                     </td>
 
-                                    <!-- Tombol Detail -->
+                                    <!-- Tombol Detail & Edit -->
                                     <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                        <a href="{{ route('user.tickets.show', $ticket->id) }}"
-                                            class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white text-xs font-semibold rounded transition border border-indigo-100">
-                                            <span>Detail</span>
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 5l7 7-7 7"></path>
-                                            </svg>
-                                        </a>
+                                        <div class="flex items-center justify-center gap-1.5">
+                                            @if($ticket->status == 'open')
+                                                <a href="{{ route('user.tickets.edit', $ticket->id) }}"
+                                                    class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-600 text-amber-700 hover:text-white text-xs font-semibold rounded transition border border-amber-200"
+                                                    title="Edit Tiket">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                    <span>Edit</span>
+                                                </a>
+                                                <form action="{{ route('user.tickets.destroy', $ticket->id) }}" method="POST"
+                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus tiket #{{ $ticket->ticket_code }} ini?');"
+                                                    class="inline-block">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-xs font-semibold rounded transition border border-rose-200"
+                                                        title="Hapus Tiket">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                        <span>Hapus</span>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            <a href="{{ route('user.tickets.show', $ticket->id) }}"
+                                                class="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white text-xs font-semibold rounded transition border border-indigo-100">
+                                                <span>Detail</span>
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 5l7 7-7 7"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -303,114 +328,13 @@
                     </table>
                 </div>
 
-                <div id="ticket-pagination" class="px-6 py-4 border-t border-gray-200/80 bg-gray-50/50" @if(!$tickets->hasPages()) style="display: none;" @endif>
-                    {{ $tickets->links() }}
-                </div>
+                @if($tickets->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-200/80 bg-gray-50/50">
+                        {{ $tickets->links() }}
+                    </div>
+                @endif
             </div>
 
         </div>
     </div>
-
-    <script>
-    (function () {
-        const form = document.getElementById('ticket-search-form');
-        if (!form) return;
-        const input = document.getElementById('ticket-search');
-        const rows = document.getElementById('ticket-rows');
-        const table = document.getElementById('ticket-table');
-        const pagination = document.getElementById('ticket-pagination');
-        const pageInfo = document.getElementById('ticket-page-info');
-        const loading = document.getElementById('ticket-search-loading');
-        let timer = null;
-
-        function esc(s) {
-            return String(s ?? '').replace(/[&<>"']/g, function (c) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-            });
-        }
-
-        function priorityBadge(p) {
-            if (p === 'urgent') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-rose-100 text-rose-700 font-bold animate-pulse">URGENT</span>';
-            if (p === 'high') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-orange-100 text-orange-700 font-semibold">HIGH</span>';
-            if (p === 'medium') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-sky-100 text-sky-700">MEDIUM</span>';
-            return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-slate-100 text-slate-600">LOW</span>';
-        }
-
-        function statusBadge(s) {
-            if (s === 'open') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700 border border-blue-200 font-medium">OPEN</span>';
-            if (s === 'in_progress') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-amber-50 text-amber-700 border border-amber-200 font-medium">IN PROGRESS</span>';
-            if (s === 'resolved') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">RESOLVED</span>';
-            return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-gray-100 text-gray-600 border border-gray-200 font-medium">CLOSED</span>';
-        }
-
-        function techCell(name) {
-            if (name) {
-                return '<div class="flex items-center gap-1.5"><div class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px]">' + esc(name.charAt(0).toUpperCase()) + '</div><span class="text-xs text-gray-800 font-medium">' + esc(name) + '</span></div>';
-            }
-            return '<span class="text-xs text-gray-400 italic">Belum ditugaskan</span>';
-        }
-
-        function rowHtml(t) {
-            return '<tr class="hover:bg-gray-50/50 transition-colors duration-150 text-xs">'
-                + '<td class="py-3.5 px-4 font-mono font-bold text-indigo-600 whitespace-nowrap"><a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-100 transition">#' + esc(t.ticket_code) + '</a></td>'
-                + '<td class="py-3.5 px-4 max-w-xs"><a href="' + t.show_url + '" class="font-semibold text-gray-900 hover:text-indigo-600 truncate block transition">' + esc(t.title) + '</a><p class="text-gray-400 truncate text-[11px] mt-0.5">' + esc(t.description) + '</p></td>'
-                + '<td class="py-3.5 px-4 whitespace-nowrap"><span class="inline-flex items-center text-xs font-medium text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded">' + esc(t.category_name) + '</span></td>'
-                + '<td class="py-3.5 px-4 whitespace-nowrap">' + priorityBadge(t.priority) + '</td>'
-                + '<td class="py-3.5 px-4 whitespace-nowrap">' + statusBadge(t.status) + '</td>'
-                + '<td class="py-3.5 px-4 whitespace-nowrap">' + techCell(t.technician_name) + '</td>'
-                + '<td class="py-3.5 px-4 text-xs text-gray-500 whitespace-nowrap">' + esc(t.created_at) + '</td>'
-                + '<td class="py-3.5 px-4 text-center whitespace-nowrap"><a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white text-xs font-semibold rounded transition border border-indigo-100"><span>Detail</span><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></a></td>'
-                + '</tr>';
-        }
-
-        function emptyHtml(q) {
-            return '<tr><td colspan="8" class="py-12 px-4 text-center"><div class="max-w-xs mx-auto text-center space-y-3">'
-                + '<div class="w-12 h-12 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>'
-                + '<h4 class="font-semibold text-gray-800 text-sm">' + (q ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Tiket') + '</h4>'
-                + '<p class="text-xs text-gray-500">' + (q ? 'Tidak ada tiket yang cocok dengan pencarian &quot;' + esc(q) + '&quot;.' : 'Anda belum pernah membuat atau melaporkan kendala IT.') + '</p>'
-                + '</div></td></tr>';
-        }
-
-        async function fetchPage(page) {
-            const params = new URLSearchParams(new FormData(form));
-            params.set('ajax', '1');
-            if (page) { params.set('page', page); } else { params.delete('page'); }
-            loading.classList.remove('hidden');
-            table.classList.add('opacity-50');
-            try {
-                const res = await fetch(form.action + '?' + params.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                if (!res.ok) throw new Error('request failed');
-                const json = await res.json();
-                const q = params.get('q') || '';
-                rows.innerHTML = json.data.length ? json.data.map(rowHtml).join('') : emptyHtml(q);
-                pagination.innerHTML = json.pagination || '';
-                pagination.style.display = json.last_page > 1 ? '' : 'none';
-                pageInfo.textContent = q
-                    ? json.total + ' hasil \u2022 Halaman ' + json.current_page + ' dari ' + json.last_page
-                    : 'Halaman ' + json.current_page + ' dari ' + json.last_page;
-                const clean = new URLSearchParams(params);
-                clean.delete('ajax'); clean.delete('page');
-                if (json.current_page > 1) clean.set('page', json.current_page);
-                history.replaceState(null, '', form.action + (clean.toString() ? '?' + clean.toString() : ''));
-            } catch (e) {
-                form.submit();
-            } finally {
-                loading.classList.add('hidden');
-                table.classList.remove('opacity-50');
-            }
-        }
-
-        input.addEventListener('input', function () {
-            clearTimeout(timer);
-            timer = setTimeout(function () { fetchPage(1); }, 400);
-        });
-
-        pagination.addEventListener('click', function (e) {
-            const a = e.target.closest('a');
-            if (!a) return;
-            e.preventDefault();
-            fetchPage(new URL(a.href).searchParams.get('page') || 1);
-        });
-    })();
-    </script>
 </x-app-layout>

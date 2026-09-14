@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\TicketLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TicketController extends Controller
@@ -127,5 +128,84 @@ class TicketController extends Controller
 
         return redirect()->route('user.tickets.index')
             ->with('success', "Tiket $ticketCode berhasil dibuat dan sedang menunggu penanganan.");
+    }
+
+    // Menampilkan form edit tiket (hanya jika status masih open)
+    public function edit($id)
+    {
+        $ticket = Ticket::where('user_id', auth()->id())->findOrFail($id);
+
+        if ($ticket->status !== 'open') {
+            return redirect()->route('user.tickets.show', $ticket->id)
+                ->with('error', 'Tiket ini sudah diproses dan tidak dapat diubah lagi.');
+        }
+
+        $categories = Category::all();
+        return view('user.tickets.edit', compact('ticket', 'categories'));
+    }
+
+    // Memperbarui data tiket di database (hanya jika status masih open)
+    public function update(Request $request, $id)
+    {
+        $ticket = Ticket::where('user_id', auth()->id())->findOrFail($id);
+
+        if ($ticket->status !== 'open') {
+            return redirect()->route('user.tickets.show', $ticket->id)
+                ->with('error', 'Tiket ini sudah diproses dan tidak dapat diubah lagi.');
+        }
+
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'priority' => 'required|in:low,medium,high,urgent',
+            'attachment' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        $attachmentPath = $ticket->attachment;
+        if ($request->hasFile('attachment')) {
+            $attachmentPath = $request->file('attachment')->store('tickets', 'public');
+        }
+
+        $ticket->update([
+            'category_id' => $request->category_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'priority' => $request->priority,
+            'attachment' => $attachmentPath,
+        ]);
+
+        TicketLog::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => auth()->id(),
+            'message' => 'Pelapor memperbarui informasi tiket kendala.',
+        ]);
+
+        return redirect()->route('user.tickets.show', $ticket->id)
+            ->with('success', 'Data tiket berhasil diperbarui.');
+    }
+
+    // Menghapus tiket kendala (hanya jika status masih open)
+    public function destroy($id)
+    {
+        $ticket = Ticket::where('user_id', auth()->id())->findOrFail($id);
+
+        if ($ticket->status !== 'open') {
+            return redirect()->route('user.tickets.show', $ticket->id)
+                ->with('error', 'Tiket ini sudah diproses dan tidak dapat dihapus lagi.');
+        }
+
+        $ticketCode = $ticket->ticket_code;
+
+        // Hapus file lampiran jika ada
+        if ($ticket->attachment && Storage::disk('public')->exists($ticket->attachment)) {
+            Storage::disk('public')->delete($ticket->attachment);
+        }
+
+        // Hapus tiket dari database (TicketLog akan terhapus otomatis via cascade)
+        $ticket->delete();
+
+        return redirect()->route('user.tickets.index')
+            ->with('success', "Tiket #{$ticketCode} berhasil dihapus.");
     }
 }
