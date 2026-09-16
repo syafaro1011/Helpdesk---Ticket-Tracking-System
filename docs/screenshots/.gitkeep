@@ -1,0 +1,10 @@
+# Place screenshot images in this directory.
+# Supported formats: PNG, JPG, WebP.
+# Naming recommendations:
+# - login.png
+# - dashboard-user.png
+# - create-ticket.png
+# - ticket-list.png
+# - ticket-detail.png
+# - dashboard-tech.png
+# - export-print.png

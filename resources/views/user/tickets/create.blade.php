@@ -10,8 +10,6 @@
                     </svg>
                     {{ __('Buat Tiket Kendala Baru') }}
                 </h2>
-                <p class="mt-1 text-xs text-gray-500">Laporkan masalah perangkat keras, jaringan, atau sistem aplikasi
-                    yang Anda alami</p>
             </div>
             <a href="{{ route('user.tickets.index') }}"
                 class="shadow-2xs inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-50">
@@ -39,11 +37,32 @@
                     }
                 }
             }">
-
+            
+            <!-- Tips pelaporan -->
+            <div class="shadow-2xs flex items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-sky-900">
+                <div class="mt-0.5 shrink-0 rounded-lg bg-sky-100 p-1.5 text-sky-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-xs">
+                    <span class="font-bold">Tips Pelaporan Kendala</span>
+                    <ul class="mt-1.5 list-inside list-disc space-y-1 text-sky-800">
+                        <li>Jelaskan kendala selengkap mungkin (lokasi ruangan, kronologi masalah, pesan
+                            error).</li>
+                        <li>Lampirkan foto/screenshot pesan kesalahan agar teknisi lebih cepat memverifikasi.
+                        </li>
+                        <li>Pilih tingkat urgensi sesuai dampak nyata, bukan sekadar rasa terburu-buru.</li>
+                    </ul>
+                </div>
+            </div>
+            
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
 
                 <!-- Kolom kiri: form utama -->
                 <div class="space-y-6 lg:col-span-2">
+
 
                     <!-- Form Card -->
                     <div class="rounded-2xl border border-gray-200/80 bg-white p-6 shadow-sm sm:p-8">
@@ -184,7 +203,7 @@
 
                 <!-- Kolom kanan: sidebar bantuan -->
                 <div class="space-y-6 lg:sticky lg:top-6">
-
+                    
                     <!-- Ringkasan tiket -->
                     <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-gray-700">Ringkasan</h3>
@@ -216,25 +235,6 @@
                         </dl>
                     </div>
 
-                    <!-- Tips pelaporan -->
-                    <div class="shadow-2xs flex items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-sky-900">
-                        <div class="mt-0.5 shrink-0 rounded-lg bg-sky-100 p-1.5 text-sky-600">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="text-xs">
-                            <span class="font-bold">Tips Pelaporan Kendala</span>
-                            <ul class="mt-1.5 list-inside list-disc space-y-1 text-sky-800">
-                                <li>Jelaskan kendala selengkap mungkin (lokasi ruangan, kronologi masalah, pesan
-                                    error).</li>
-                                <li>Lampirkan foto/screenshot pesan kesalahan agar teknisi lebih cepat memverifikasi.
-                                </li>
-                                <li>Pilih tingkat urgensi sesuai dampak nyata, bukan sekadar rasa terburu-buru.</li>
-                            </ul>
-                        </div>
-                    </div>
 
                     <!-- Panduan prioritas -->
                     <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm">

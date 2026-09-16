@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Tech;
 
+use App\Exports\TicketsExport;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\TicketLog;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TicketHandlingController extends Controller
 {
@@ -63,6 +65,58 @@ class TicketHandlingController extends Controller
         }
 
         return view('tech.tickets.index', compact('tickets'));
+    }
+
+    // Query tiket dengan filter yang sama seperti index (dipakai print & export)
+    protected function filteredTickets(Request $request)
+    {
+        $query = Ticket::with(['user', 'category', 'technician'])->latest();
+
+        if (auth()->user()->role === 'technician') {
+            $query->where(function ($q) {
+                $q->where('technician_id', auth()->id())
+                    ->orWhereNull('technician_id');
+            });
+        }
+
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('ticket_code', 'like', "%{$q}%")
+                    ->orWhere('title', 'like', "%{$q}%")
+                    ->orWhereHas('user', function ($userQuery) use ($q) {
+                        $userQuery->where('name', 'like', "%{$q}%");
+                    });
+            });
+        }
+
+        return $query->get();
+    }
+
+    // Halaman print (view & print via browser)
+    public function print(Request $request)
+    {
+        $tickets = $this->filteredTickets($request);
+
+        return view('tech.tickets.print', compact('tickets'));
+    }
+
+    // Download Excel (.xlsx) mengikuti filter yang aktif
+    public function export(Request $request)
+    {
+        $status = $request->input('status') ?: null;
+        $q = $request->input('q') ?: null;
+
+        $filename = 'tiket-' . ($status ?: 'semua') . '-' . date('Ymd-His') . '.xlsx';
+
+        return Excel::download(
+            TicketsExport::fromRequest($request),
+            $filename
+        );
     }
 
     // Menampilkan detail tiket beserta form update & log diskusi

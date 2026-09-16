@@ -160,11 +160,22 @@ class TicketController extends Controller
             'description' => 'required|string',
             'priority' => 'required|in:low,medium,high,urgent',
             'attachment' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'remove_attachment' => 'nullable|boolean',
         ]);
 
         $attachmentPath = $ticket->attachment;
         if ($request->hasFile('attachment')) {
+            // Hapus file lama jika diganti dengan yang baru
+            if ($ticket->attachment && Storage::disk('public')->exists($ticket->attachment)) {
+                Storage::disk('public')->delete($ticket->attachment);
+            }
             $attachmentPath = $request->file('attachment')->store('tickets', 'public');
+        } elseif ($request->boolean('remove_attachment')) {
+            // Hapus file lama jika user mencentang hapus gambar
+            if ($ticket->attachment && Storage::disk('public')->exists($ticket->attachment)) {
+                Storage::disk('public')->delete($ticket->attachment);
+            }
+            $attachmentPath = null;
         }
 
         $ticket->update([

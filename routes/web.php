@@ -31,6 +31,8 @@ Route::middleware(['auth'])->group(function () {
     // Fitur Teknisi & Admin
     Route::middleware(['role:technician,admin'])->prefix('tech')->name('tech.')->group(function () {
         Route::get('/tickets', [TicketHandlingController::class, 'index'])->name('tickets.index');
+        Route::get('/tickets/export', [TicketHandlingController::class, 'export'])->name('tickets.export');
+        Route::get('/tickets/print', [TicketHandlingController::class, 'print'])->name('tickets.print');
         Route::get('/tickets/{id}', [TicketHandlingController::class, 'show'])->name('tickets.show');
         Route::patch('/tickets/{id}/status', [TicketHandlingController::class, 'updateStatus'])->name('tickets.update-status');
     });

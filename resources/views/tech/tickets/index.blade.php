@@ -10,11 +10,28 @@
                 </h2>
                 <!-- <p class="text-xs text-gray-500 mt-1">Pusat kontrol pemantauan dan penanganan tiket kendala IT pelapor</p> -->
             </div>
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg shadow-2xs border border-gray-200 text-xs">
-                <span class="text-gray-500">Role:</span>
-                <span class="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 uppercase">
-                    {{ auth()->user()->role }}
-                </span>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('tech.tickets.print', array_filter(['status' => request('status'), 'q' => request('q')])) }}"
+                    target="_blank"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg shadow-2xs transition">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
+                    View & Print
+                </a>
+                <a href="{{ route('tech.tickets.export', array_filter(['status' => request('status'), 'q' => request('q')])) }}"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-2xs transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Export Excel
+                </a>
+                <div class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg shadow-2xs border border-gray-200 text-xs">
+                    <span class="text-gray-500">Role:</span>
+                    <span class="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 uppercase">
+                        {{ auth()->user()->role }}
+                    </span>
+                </div>
             </div>
         </div>
     </x-slot>
@@ -104,10 +121,10 @@
                 </div>
             </div>
 
-            <!-- Filter Status Bar -->
-            <div class="bg-white p-4 rounded-xl border border-gray-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
-                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <span class="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+            <!-- Filter Status + Pencarian Tiket -->
+            <div class="bg-white p-4 rounded-xl border border-gray-200/80 shadow-xs flex flex-col xl:flex-row xl:items-center gap-4">
+                <div class="flex flex-wrap items-center gap-3 flex-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5 whitespace-nowrap">
                         <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                         </svg>
@@ -136,50 +153,50 @@
                             CLOSED
                         </a>
                     </div>
-                </div>
 
-                @if(request('status'))
-                    <a href="{{ route('tech.tickets.index', array_filter(['q' => request('q')])) }}" class="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-800 transition">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        Reset Filter
-                    </a>
-                @endif
-            </div>
-
-            <!-- Pencarian Tiket -->
-            <form method="GET" action="{{ route('tech.tickets.index') }}" id="ticket-search-form" class="flex flex-col sm:flex-row gap-2">
-                @if(request('status'))
-                    <input type="hidden" name="status" value="{{ request('status') }}">
-                @endif
-                <div class="relative flex-1">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                    </svg>
-                    <input type="text" name="q" id="ticket-search" value="{{ request('q') }}" placeholder="Cari kode tiket, judul kendala, atau nama pelapor..." autocomplete="off"
-                        {{ request('q') ? 'autofocus' : '' }}
-                        class="block w-full rounded-lg border-gray-300 shadow-2xs focus:border-indigo-500 focus:ring-indigo-500 text-xs py-2.5 pl-9 pr-9">
-                    <span id="ticket-search-loading" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-indigo-500">
-                        <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                        </svg>
-                    </span>
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit"
-                        class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg shadow-xs transition">
-                        Cari
-                    </button>
-                    @if(request('q'))
-                        <a href="{{ route('tech.tickets.index', array_filter(['status' => request('status')])) }}"
-                            class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg shadow-2xs transition">
-                            Reset
+                    @if(request('status'))
+                        <a href="{{ route('tech.tickets.index', array_filter(['q' => request('q')])) }}" class="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-800 transition whitespace-nowrap">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Reset Filter
                         </a>
                     @endif
                 </div>
-            </form>
+
+                <!-- Pencarian Tiket -->
+                <form method="GET" action="{{ route('tech.tickets.index') }}" id="ticket-search-form" class="flex flex-col sm:flex-row gap-2 w-full xl:w-auto xl:min-w-[360px] xl:max-w-md xl:flex-1">
+                    @if(request('status'))
+                        <input type="hidden" name="status" value="{{ request('status') }}">
+                    @endif
+                    <div class="relative flex-1">
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                        <input type="text" name="q" id="ticket-search" value="{{ request('q') }}" placeholder="Cari kode tiket, judul, pelapor..." autocomplete="off"
+                            {{ request('q') ? 'autofocus' : '' }}
+                            class="block w-full rounded-lg border-gray-300 shadow-2xs focus:border-indigo-500 focus:ring-indigo-500 text-xs py-2 pl-9 pr-9">
+                        <span id="ticket-search-loading" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-indigo-500">
+                            <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit"
+                            class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg shadow-xs transition">
+                            Cari
+                        </button>
+                        @if(request('q'))
+                            <a href="{{ route('tech.tickets.index', array_filter(['status' => request('status')])) }}"
+                                class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg shadow-2xs transition">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
 
             <!-- Tabel Daftar Tiket Masuk -->
             <div class="bg-white rounded-xl border border-gray-200/80 shadow-xs overflow-hidden">

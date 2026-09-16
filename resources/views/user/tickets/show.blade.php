@@ -200,15 +200,16 @@
                             </div>
                         </div>
 
-                        @if ($ticket->attachment)
+                        @if ($ticket->attachment && \Illuminate\Support\Facades\Storage::disk('public')->exists($ticket->attachment))
                             <div class="pt-2">
                                 <h4 class="mb-2 text-xs font-bold uppercase tracking-wider text-gray-400">Lampiran
                                     Foto Bukti</h4>
                                 <div
                                     class="shadow-2xs group relative inline-block max-w-sm overflow-hidden rounded-lg border border-gray-200">
-                                    <img src="{{ asset('storage/' . $ticket->attachment) }}" alt="Bukti Kendala"
-                                        class="h-auto max-h-56 w-full object-cover transition-transform duration-200 group-hover:scale-105">
-                                    <a href="{{ asset('storage/' . $ticket->attachment) }}" target="_blank"
+                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($ticket->attachment) }}" alt="Bukti Kendala"
+                                        class="h-auto max-h-56 w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                        onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=Gambar+Tidak+Ditemukan';">
+                                    <a href="{{ \Illuminate\Support\Facades\Storage::url($ticket->attachment) }}" target="_blank"
                                         class="absolute inset-0 flex items-center justify-center gap-1 bg-black/40 text-xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
