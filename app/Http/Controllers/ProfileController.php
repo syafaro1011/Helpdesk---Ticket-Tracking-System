@@ -57,4 +57,33 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Generate a new Telegram verification code for account linking.
+     */
+    public function generateTelegramCode(Request $request): RedirectResponse
+    {
+        $code = 'TG-' . rand(100000, 999999);
+
+        $request->user()->update([
+            'telegram_verification_code' => $code,
+        ]);
+
+        return Redirect::route('profile.edit')->with('telegram_code_generated', $code);
+    }
+
+    /**
+     * Unlink Telegram account and automatically generate a fresh code for re-linking if needed.
+     */
+    public function unlinkTelegram(Request $request): RedirectResponse
+    {
+        $newCode = 'TG-' . rand(100000, 999999);
+
+        $request->user()->update([
+            'telegram_chat_id' => null,
+            'telegram_verification_code' => $newCode,
+        ]);
+
+        return Redirect::route('profile.edit')->with('status', 'telegram-unlinked');
+    }
 }

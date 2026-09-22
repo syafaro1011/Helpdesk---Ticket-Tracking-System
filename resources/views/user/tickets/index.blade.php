@@ -128,7 +128,7 @@
                         Cari
                     </button>
                     @if(request('q'))
-                        <a href="{{ route('user.tickets.index') }}"
+                        <a href="{{ route('user.tickets.index') }}" id="ticket-search-reset"
                             class="inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg shadow-2xs transition">
                             Reset
                         </a>
@@ -328,13 +328,162 @@
                     </table>
                 </div>
 
-                @if($tickets->hasPages())
-                    <div class="px-6 py-4 border-t border-gray-200/80 bg-gray-50/50">
-                        {{ $tickets->links() }}
-                    </div>
-                @endif
+                <div id="ticket-pagination" class="px-6 py-4 border-t border-gray-200/80 bg-gray-50/50" @if(!$tickets->hasPages()) style="display: none;" @endif>
+                    {{ $tickets->links() }}
+                </div>
             </div>
 
         </div>
     </div>
+
+    <script>
+    (function () {
+        const form = document.getElementById('ticket-search-form');
+        if (!form) return;
+        const input = document.getElementById('ticket-search');
+        const rows = document.getElementById('ticket-rows');
+        const table = document.getElementById('ticket-table');
+        const pagination = document.getElementById('ticket-pagination');
+        const pageInfo = document.getElementById('ticket-page-info');
+        const loading = document.getElementById('ticket-search-loading');
+        const csrfToken = "{{ csrf_token() }}";
+        const baseIndexUrl = "{{ route('user.tickets.index') }}";
+        const createUrl = "{{ route('user.tickets.create') }}";
+        let timer = null;
+
+        // Pindahkan kursor ke akhir teks saat autofocus (biar enak lanjut ngetik)
+        if (document.activeElement === input) {
+            const len = input.value.length;
+            try { input.setSelectionRange(len, len); } catch (e) {}
+        }
+
+        function esc(s) {
+            return String(s ?? '').replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function priorityBadge(p) {
+            if (p === 'urgent') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-rose-100 text-rose-700 font-bold animate-pulse">🚨 URGENT</span>';
+            if (p === 'high') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-orange-100 text-orange-700 font-semibold">HIGH</span>';
+            if (p === 'medium') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-sky-100 text-sky-700">MEDIUM</span>';
+            return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-slate-100 text-slate-600">LOW</span>';
+        }
+
+        function statusBadge(s) {
+            if (s === 'open') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700 border border-blue-200 font-medium">OPEN</span>';
+            if (s === 'in_progress') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-amber-50 text-amber-700 border border-amber-200 font-medium">IN PROGRESS</span>';
+            if (s === 'resolved') return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">RESOLVED</span>';
+            return '<span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs bg-gray-100 text-gray-600 border border-gray-200 font-medium">CLOSED</span>';
+        }
+
+        function techCell(name) {
+            if (name) {
+                const initial = esc(String(name).charAt(0).toUpperCase());
+                return '<div class="flex items-center gap-1.5"><div class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px]">' + initial + '</div><span class="text-xs text-gray-800 font-medium">' + esc(name) + '</span></div>';
+            }
+            return '<span class="text-xs text-gray-400 italic">Belum ditugaskan</span>';
+        }
+
+        function actionCell(t) {
+            let html = '<div class="flex items-center justify-center gap-1.5">';
+            if (t.can_edit) {
+                html += '<a href="' + t.edit_url + '" class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 hover:bg-amber-600 text-amber-700 hover:text-white text-xs font-semibold rounded transition border border-amber-200" title="Edit Tiket">'
+                    + '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>'
+                    + '<span>Edit</span></a>';
+                html += '<form action="' + t.destroy_url + '" method="POST" onsubmit="return confirm(\'Apakah Anda yakin ingin menghapus tiket #' + esc(t.ticket_code) + ' ini?\');" class="inline-block">'
+                    + '<input type="hidden" name="_token" value="' + csrfToken + '">'
+                    + '<input type="hidden" name="_method" value="DELETE">'
+                    + '<button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-xs font-semibold rounded transition border border-rose-200" title="Hapus Tiket">'
+                    + '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>'
+                    + '<span>Hapus</span></button></form>';
+            }
+            html += '<a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white text-xs font-semibold rounded transition border border-indigo-100">'
+                + '<span>Detail</span>'
+                + '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></a>';
+            return html + '</div>';
+        }
+
+        function rowHtml(t) {
+            return '<tr class="hover:bg-gray-50/50 transition-colors duration-150 text-xs">'
+                + '<td class="py-3.5 px-4 font-mono font-bold text-indigo-600 whitespace-nowrap"><a href="' + t.show_url + '" class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 rounded border border-indigo-100 transition">#' + esc(t.ticket_code) + '</a></td>'
+                + '<td class="py-3.5 px-4 max-w-xs"><a href="' + t.show_url + '" class="font-semibold text-gray-900 hover:text-sky-600 truncate block transition" title="' + esc(t.title) + '">' + esc(t.title) + '</a>'
+                + '<p class="text-gray-400 truncate text-[11px] mt-0.5" title="' + esc(t.description) + '">' + esc(t.description) + '</p></td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap"><span class="inline-flex items-center text-xs font-medium text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded">' + esc(t.category_name) + '</span></td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap">' + priorityBadge(t.priority) + '</td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap">' + statusBadge(t.status) + '</td>'
+                + '<td class="py-3.5 px-4 whitespace-nowrap">' + techCell(t.technician_name) + '</td>'
+                + '<td class="py-3.5 px-4 text-xs text-gray-500 whitespace-nowrap">' + esc(t.created_at) + '</td>'
+                + '<td class="py-3.5 px-4 text-center whitespace-nowrap">' + actionCell(t) + '</td>'
+                + '</tr>';
+        }
+
+        function emptyHtml(q) {
+            const title = q ? 'Pencarian Tidak Ditemukan' : 'Belum Ada Tiket';
+            const desc = q ? 'Tidak ada tiket yang cocok dengan pencarian &quot;' + esc(q) + '&quot;.' : 'Anda belum pernah membuat atau melaporkan kendala IT.';
+            return '<tr><td colspan="8" class="py-12 px-4 text-center"><div class="max-w-xs mx-auto text-center space-y-3">'
+                + '<div class="w-12 h-12 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>'
+                + '<h4 class="font-semibold text-gray-800 text-sm">' + title + '</h4>'
+                + '<p class="text-xs text-gray-500">' + desc + '</p>'
+                + '<a href="' + createUrl + '" class="inline-flex items-center px-3.5 py-1.5 bg-sky-600 text-white text-xs font-semibold rounded-lg hover:bg-sky-700 transition">+ Buat Tiket Sekarang</a>'
+                + '</div></td></tr>';
+        }
+
+        function toggleReset(q) {
+            let resetBtn = document.getElementById('ticket-search-reset');
+            if (q && !resetBtn) {
+                resetBtn = document.createElement('a');
+                resetBtn.id = 'ticket-search-reset';
+                resetBtn.href = baseIndexUrl;
+                resetBtn.className = 'inline-flex items-center justify-center flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg shadow-2xs transition';
+                resetBtn.textContent = 'Reset';
+                form.querySelector('.flex.gap-2').appendChild(resetBtn);
+            } else if (!q && resetBtn) {
+                resetBtn.remove();
+            }
+        }
+
+        async function fetchPage(page) {
+            const params = new URLSearchParams(new FormData(form));
+            params.set('ajax', '1');
+            if (page && Number(page) > 1) { params.set('page', page); } else { params.delete('page'); }
+            loading.classList.remove('hidden');
+            table.classList.add('opacity-50');
+            try {
+                const res = await fetch(form.action + '?' + params.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!res.ok) throw new Error('request failed');
+                const json = await res.json();
+                const q = params.get('q') || '';
+                rows.innerHTML = json.data.length ? json.data.map(rowHtml).join('') : emptyHtml(q);
+                pagination.innerHTML = json.pagination || '';
+                pagination.style.display = json.last_page > 1 ? '' : 'none';
+                if (pageInfo) pageInfo.textContent = 'Halaman ' + json.current_page + ' dari ' + json.last_page;
+                toggleReset(q);
+                const clean = new URLSearchParams(params);
+                clean.delete('ajax'); clean.delete('page');
+                if (json.current_page > 1) clean.set('page', json.current_page);
+                history.replaceState(null, '', form.action + (clean.toString() ? '?' + clean.toString() : ''));
+            } catch (e) {
+                form.submit();
+            } finally {
+                loading.classList.add('hidden');
+                table.classList.remove('opacity-50');
+            }
+        }
+
+        // Cari langsung tiap huruf (debounce 350ms) — tanpa perlu tekan tombol Cari
+        input.addEventListener('input', function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () { fetchPage(1); }, 350);
+        });
+
+        // Pagination tetap jalan via AJAX agar query pencarian tidak hilang
+        pagination.addEventListener('click', function (e) {
+            const a = e.target.closest('a');
+            if (!a) return;
+            e.preventDefault();
+            fetchPage(new URL(a.href).searchParams.get('page') || 1);
+        });
+    })();
+    </script>
 </x-app-layout>

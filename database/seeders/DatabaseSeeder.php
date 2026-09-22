@@ -47,6 +47,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'andi@helpdesk.com',
             'password' => Hash::make('password123'),
             'role' => 'user',
+            'telegram_verification_code' => 'TG-123456',
         ]);
 
         // Akun User / Karyawan 2

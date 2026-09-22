@@ -10,10 +10,8 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Route yang membutuhkan Autentikasi (Sudah Login)
 Route::middleware(['auth'])->group(function () {
 
-    // Halaman Beranda (semua role yang sudah login)
     Route::get('/beranda', [HomeController::class, 'index'])->name('home');
 
     // Fitur User / Karyawan
@@ -54,6 +52,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/telegram/code', [ProfileController::class, 'generateTelegramCode'])->name('profile.telegram.code');
+    Route::delete('/profile/telegram/unlink', [ProfileController::class, 'unlinkTelegram'])->name('profile.telegram.unlink');
 });
 
 require __DIR__ . '/auth.php';

@@ -1,28 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('user.tickets.index') }}"
-                    class="shadow-2xs rounded-lg border border-gray-300 bg-white p-1.5 text-gray-600 transition hover:bg-gray-50">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18">
-                        </path>
-                    </svg>
-                </a>
-                <div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h2 class="text-xl font-bold tracking-tight text-gray-800">
-                            Detail Tiket Saya
-                        </h2>
-                        <span
-                            class="rounded border border-sky-100 bg-sky-50 px-2 py-0.5 font-mono text-xs font-bold text-sky-600">
-                            #{{ $ticket->ticket_code }}
-                        </span>
-                    </div>
-                    <p class="mt-0.5 text-xs text-gray-500">Pantau status pengerjaan dan tanggapan teknisi IT Support
-                    </p>
+            <div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <h2 class="text-xl font-bold tracking-tight text-gray-800">
+                        Detail Tiket Saya
+                    </h2>
+                    <span
+                        class="rounded border border-sky-100 bg-sky-50 px-2 py-0.5 font-mono text-xs font-bold text-sky-600">
+                        #{{ $ticket->ticket_code }}
+                    </span>
                 </div>
+                <p class="mt-0.5 text-xs text-gray-500">Pantau status pengerjaan dan tanggapan teknisi IT Support
+                </p>
             </div>
 
             <div class="flex items-center gap-2">
@@ -78,6 +68,17 @@
     <div class="py-8">
         <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
 
+            <div>
+                <a href="{{ route('user.tickets.index') }}"
+                    class="shadow-2xs rounded-lg border border-gray-300 bg-white p-1.5 text-gray-600 transition hover:bg-gray-50 inline-flex">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18">
+                        </path>
+                    </svg>
+                </a>
+            </div>
+
             <!-- Flash Notification -->
             @if (session('success'))
                 <div class="shadow-2xs flex items-start gap-3 rounded-r-lg border-l-4 border-emerald-500 bg-emerald-50 p-4">
@@ -121,7 +122,7 @@
                             <div class="flex flex-col items-center gap-1.5">
                                 <div
                                     class="flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold
-                                            {{ $loop->index < $currentIndex ? 'bg-sky-600 text-white' : ($loop->index == $currentIndex ? 'bg-sky-600 text-white ring-4 ring-sky-100' : 'bg-gray-100 text-gray-400') }}">
+                                                {{ $loop->index < $currentIndex ? 'bg-sky-600 text-white' : ($loop->index == $currentIndex ? 'bg-sky-600 text-white ring-4 ring-sky-100' : 'bg-gray-100 text-gray-400') }}">
                                     @if ($loop->index < $currentIndex)
                                         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
@@ -206,10 +207,12 @@
                                     Foto Bukti</h4>
                                 <div
                                     class="shadow-2xs group relative inline-block max-w-sm overflow-hidden rounded-lg border border-gray-200">
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($ticket->attachment) }}" alt="Bukti Kendala"
+                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($ticket->attachment) }}"
+                                        alt="Bukti Kendala"
                                         class="h-auto max-h-56 w-full object-cover transition-transform duration-200 group-hover:scale-105"
                                         onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=Gambar+Tidak+Ditemukan';">
-                                    <a href="{{ \Illuminate\Support\Facades\Storage::url($ticket->attachment) }}" target="_blank"
+                                    <a href="{{ \Illuminate\Support\Facades\Storage::url($ticket->attachment) }}"
+                                        target="_blank"
                                         class="absolute inset-0 flex items-center justify-center gap-1 bg-black/40 text-xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

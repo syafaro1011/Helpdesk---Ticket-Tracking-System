@@ -10,9 +10,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // MariaDB 10.4 tidak mendukung RENAME COLUMN, jadi pakai CHANGE
-        // (doctrine/dbal tidak terinstal sehingga renameColumn() tidak bisa dipakai).
-        DB::statement('ALTER TABLE `tickets` CHANGE `tickets_code` `ticket_code` VARCHAR(255) NOT NULL');
+        if (\Illuminate\Support\Facades\Schema::hasColumn('tickets', 'tickets_code')) {
+            DB::statement('ALTER TABLE `tickets` CHANGE `tickets_code` `ticket_code` VARCHAR(255) NOT NULL');
+        }
     }
 
     /**
@@ -20,6 +20,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE `tickets` CHANGE `ticket_code` `tickets_code` VARCHAR(255) NOT NULL');
+        if (\Illuminate\Support\Facades\Schema::hasColumn('tickets', 'ticket_code')) {
+            DB::statement('ALTER TABLE `tickets` CHANGE `ticket_code` `tickets_code` VARCHAR(255) NOT NULL');
+        }
     }
 };

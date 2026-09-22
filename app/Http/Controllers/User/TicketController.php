@@ -30,7 +30,8 @@ class TicketController extends Controller
 
         if ($request->boolean('ajax')) {
             return response()->json([
-                'data' => $tickets->getCollection()->map(fn ($t) => [
+                'data' => $tickets->getCollection()->map(fn($t) => [
+                    'id' => $t->id,
                     'ticket_code' => $t->ticket_code,
                     'title' => $t->title,
                     'description' => $t->description,
@@ -40,6 +41,9 @@ class TicketController extends Controller
                     'technician_name' => $t->technician->name ?? null,
                     'created_at' => $t->created_at->format('d M Y, H:i'),
                     'show_url' => route('user.tickets.show', $t->id),
+                    'edit_url' => route('user.tickets.edit', $t->id),
+                    'destroy_url' => route('user.tickets.destroy', $t->id),
+                    'can_edit' => $t->status === 'open',
                 ])->values(),
                 'pagination' => $tickets->links()->toHtml(),
                 'total' => $tickets->total(),
@@ -89,7 +93,7 @@ class TicketController extends Controller
     // Menyimpan tiket baru ke database
     public function store(Request $request)
     {
-        // 1. Validasi Input
+        // Validasi Input
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
@@ -98,16 +102,16 @@ class TicketController extends Controller
             'attachment' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Maksimal 2MB
         ]);
 
-        // 2. Handle Upload File/Gambar
+        // Handle Upload File/Gambar
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
             $attachmentPath = $request->file('attachment')->store('tickets', 'public');
         }
 
-        // 3. Generate Kode Tiket Unik (Contoh: TCK-20260901-A1B2)
+        // Generate Kode Tiket Unik (Contoh: TCK-20260901-A1B2)
         $ticketCode = 'TCK-' . date('Ymd') . '-' . strtoupper(Str::random(4));
 
-        // 4. Simpan ke Database
+        // Simpan ke Database
         $ticket = Ticket::create([
             'ticket_code' => $ticketCode,
             'user_id' => auth()->id(),
@@ -119,7 +123,7 @@ class TicketController extends Controller
             'attachment' => $attachmentPath,
         ]);
 
-        // 5. Simpan log awal pengajuan
+        // Simpan log awal pengajuan
         TicketLog::create([
             'ticket_id' => $ticket->id,
             'user_id' => auth()->id(),
