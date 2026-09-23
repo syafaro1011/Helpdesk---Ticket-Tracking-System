@@ -23,21 +23,8 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="mx-auto max-w-6xl space-y-6 sm:px-6 lg:px-8"
-            x-data="{
-                fileName: '',
-                previewUrl: '',
-                title: '{{ old('title', '') }}',
-                priority: '{{ old('priority', 'medium') }}',
-                handleFile(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        this.fileName = file.name;
-                        this.previewUrl = URL.createObjectURL(file);
-                    }
-                }
-            }">
-            
+        <div class="mx-auto max-w-6xl space-y-6 sm:px-6 lg:px-8">
+
             <!-- Tips pelaporan -->
             <div class="shadow-2xs flex items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/70 p-5 text-sky-900">
                 <div class="mt-0.5 shrink-0 rounded-lg bg-sky-100 p-1.5 text-sky-600">
@@ -54,15 +41,15 @@
                         <li>Lampirkan foto/screenshot pesan kesalahan agar teknisi lebih cepat memverifikasi.
                         </li>
                         <li>Pilih tingkat urgensi sesuai dampak nyata, bukan sekadar rasa terburu-buru.</li>
+                        <li>Butuh lapor beberapa kendala sekaligus? Klik <span class="font-semibold">"+ Tambah Tiket Lain"</span> di bawah form.</li>
                     </ul>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
 
                 <!-- Kolom kiri: form utama -->
                 <div class="space-y-6 lg:col-span-2">
-
 
                     <!-- Form Card -->
                     <div class="rounded-2xl border border-gray-200/80 bg-white p-6 shadow-sm sm:p-8">
@@ -70,115 +57,137 @@
                             class="space-y-6">
                             @csrf
 
-                            <!-- Judul Kendala -->
-                            <div>
-                                <label for="title"
-                                    class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
-                                    Judul Kendala <span class="text-rose-500">*</span>
-                                </label>
-                                <input type="text" name="title" id="title" x-model="title" required
-                                    class="shadow-2xs block w-full rounded-lg border-gray-300 px-3 py-2.5 text-sm focus:border-sky-500 focus:ring-sky-500"
-                                    placeholder="Contoh: PC Ruang 201 Tidak Bisa Konek Wi-Fi Kantor">
-                                @error('title')
-                                    <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            @error('tickets')
+                                <p class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600">{{ $message }}</p>
+                            @enderror
 
-                            <!-- Kategori & Prioritas -->
-                            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                                <div>
-                                    <label for="category_id"
-                                        class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
-                                        Kategori Masalah <span class="text-rose-500">*</span>
-                                    </label>
-                                    <select name="category_id" id="category_id" required
-                                        class="shadow-2xs block w-full rounded-lg border-gray-300 px-3 py-2.5 text-sm focus:border-sky-500 focus:ring-sky-500">
-                                        <option value="">-- Pilih Kategori Kendala --</option>
-                                        @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}"
-                                                {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('category_id')
-                                        <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label for="priority"
-                                        class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
-                                        Tingkat Urgensi <span class="text-rose-500">*</span>
-                                    </label>
-                                    <select name="priority" id="priority" x-model="priority" required
-                                        class="shadow-2xs block w-full rounded-lg border-gray-300 px-3 py-2.5 text-sm focus:border-sky-500 focus:ring-sky-500">
-                                        <option value="low">Low - Masalah ringan</option>
-                                        <option value="medium">Medium - Mengganggu alur kerja</option>
-                                        <option value="high">High - Pekerjaan terhenti total</option>
-                                        <option value="urgent">Urgent - Darurat / sistem down</option>
-                                    </select>
-                                    @error('priority')
-                                        <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Detail Deskripsi -->
-                            <div>
-                                <label for="description"
-                                    class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
-                                    Deskripsi Rinci Kendala <span class="text-rose-500">*</span>
-                                </label>
-                                <textarea name="description" id="description" rows="5" required
-                                    class="shadow-2xs block w-full rounded-lg border-gray-300 p-3 text-sm focus:border-sky-500 focus:ring-sky-500"
-                                    placeholder="Tuliskan kronologi singkat, nomor aset (jika ada), serta pesan kesalahan yang muncul pada layar...">{{ old('description') }}</textarea>
-                                @error('description')
-                                    <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Upload Lampiran Foto dengan Preview File -->
-                            <div>
-                                <label class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
-                                    Foto / Bukti Kendala (Opsional)
-                                </label>
-                                <div class="mt-1 flex justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 px-6 pb-6 pt-5 transition-colors hover:border-sky-400">
-                                    <div class="space-y-2 text-center">
-                                        <template x-if="!previewUrl">
-                                            <svg class="mx-auto h-9 w-9 text-gray-400" stroke="currentColor" fill="none"
-                                                viewBox="0 0 48 48">
-                                                <path
-                                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                        </template>
-
-                                        <template x-if="previewUrl">
-                                            <div class="mb-2">
-                                                <img :src="previewUrl"
-                                                    class="shadow-xs mx-auto h-24 w-auto rounded-lg border border-gray-200 object-cover">
+                            <!-- Repeater: daftar tiket (jquery.repeater) -->
+                            @php
+                                $oldTickets = old('tickets');
+                                if (!is_array($oldTickets) || count($oldTickets) === 0) {
+                                    $oldTickets = [['title' => '', 'category_id' => '', 'priority' => 'medium', 'description' => '']];
+                                }
+                            @endphp
+                            <div id="ticket-repeater">
+                                <div data-repeater-list="tickets" class="space-y-4">
+                                    @foreach($oldTickets as $i => $raw)
+                                        @php $t = is_array($raw) ? $raw : []; @endphp
+                                        <div data-repeater-item class="rounded-xl border border-gray-200 bg-gray-50/50 p-4 sm:p-5">
+                                            <div class="mb-4 flex items-center justify-between gap-3">
+                                                <h4 class="text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                    Tiket <span class="repeater-number">#{{ $i + 1 }}</span>
+                                                </h4>
+                                                <button data-repeater-delete type="button"
+                                                    class="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-600 hover:text-white">
+                                                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                    Hapus
+                                                </button>
                                             </div>
-                                        </template>
 
-                                        <div class="flex items-center justify-center gap-1 text-xs text-gray-600">
-                                            <label for="attachment"
-                                                class="shadow-2xs relative cursor-pointer rounded border border-gray-300 bg-white px-2.5 py-1 font-semibold text-sky-600 hover:text-sky-700">
-                                                <span x-text="fileName ? 'Ganti File' : 'Pilih file gambar'">Pilih file
-                                                    gambar</span>
-                                                <input id="attachment" name="attachment" type="file" @change="handleFile"
-                                                    accept="image/png, image/jpeg, image/jpg" class="sr-only">
-                                            </label>
-                                            <p class="text-gray-500">atau drag & drop</p>
+                                            <!-- Judul Kendala -->
+                                            <div class="mb-4">
+                                                <label class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                    Judul Kendala <span class="text-rose-500">*</span>
+                                                </label>
+                                                <input type="text" name="title" value="{{ $t['title'] ?? '' }}" required
+                                                    class="ticket-title shadow-2xs block w-full rounded-lg border-gray-300 px-3 py-2.5 text-sm focus:border-sky-500 focus:ring-sky-500"
+                                                    placeholder="Contoh: PC Ruang 201 Tidak Bisa Konek Wi-Fi Kantor">
+                                                @error('tickets.' . $i . '.title')
+                                                    <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <!-- Kategori & Prioritas -->
+                                            <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                <div>
+                                                    <label class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                        Kategori Masalah <span class="text-rose-500">*</span>
+                                                    </label>
+                                                    <select name="category_id" required
+                                                        class="ticket-category shadow-2xs block w-full rounded-lg border-gray-300 px-3 py-2.5 text-sm focus:border-sky-500 focus:ring-sky-500">
+                                                        <option value="">-- Pilih Kategori Kendala --</option>
+                                                        @foreach ($categories as $category)
+                                                            <option value="{{ $category->id }}"
+                                                                {{ ($t['category_id'] ?? '') == $category->id ? 'selected' : '' }}>
+                                                                {{ $category->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('tickets.' . $i . '.category_id')
+                                                        <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+
+                                                <div>
+                                                    <label class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                        Tingkat Urgensi <span class="text-rose-500">*</span>
+                                                    </label>
+                                                    <select name="priority" required
+                                                        class="ticket-priority shadow-2xs block w-full rounded-lg border-gray-300 px-3 py-2.5 text-sm focus:border-sky-500 focus:ring-sky-500">
+                                                        <option value="low" {{ ($t['priority'] ?? 'medium') == 'low' ? 'selected' : '' }}>Low - Masalah ringan</option>
+                                                        <option value="medium" {{ ($t['priority'] ?? 'medium') == 'medium' ? 'selected' : '' }}>Medium - Mengganggu alur kerja</option>
+                                                        <option value="high" {{ ($t['priority'] ?? 'medium') == 'high' ? 'selected' : '' }}>High - Pekerjaan terhenti total</option>
+                                                        <option value="urgent" {{ ($t['priority'] ?? 'medium') == 'urgent' ? 'selected' : '' }}>Urgent - Darurat / sistem down</option>
+                                                    </select>
+                                                    @error('tickets.' . $i . '.priority')
+                                                        <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <!-- Detail Deskripsi -->
+                                            <div class="mb-4">
+                                                <label class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                    Deskripsi Rinci Kendala <span class="text-rose-500">*</span>
+                                                </label>
+                                                <textarea name="description" rows="4" required
+                                                    class="shadow-2xs block w-full rounded-lg border-gray-300 p-3 text-sm focus:border-sky-500 focus:ring-sky-500"
+                                                    placeholder="Tuliskan kronologi singkat, nomor aset (jika ada), serta pesan kesalahan yang muncul pada layar...">{{ $t['description'] ?? '' }}</textarea>
+                                                @error('tickets.' . $i . '.description')
+                                                    <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
+                                                @enderror
+                                            </div>
+
+                                            <!-- Upload Lampiran Foto per tiket -->
+                                            <div>
+                                                <label class="mb-1 block text-xs font-bold uppercase tracking-wider text-gray-700">
+                                                    Foto / Bukti Kendala (Opsional)
+                                                </label>
+                                                <div class="rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 py-4 transition-colors hover:border-sky-400">
+                                                    <div class="flex flex-col items-center gap-2 text-center sm:flex-row sm:text-left">
+                                                        <img src="" alt="Preview lampiran"
+                                                            class="attachment-preview hidden h-16 w-auto shrink-0 rounded-lg border border-gray-200 object-cover shadow-xs">
+                                                        <div class="min-w-0 flex-1">
+                                                            <label class="shadow-2xs inline-block cursor-pointer rounded border border-gray-300 bg-white px-2.5 py-1 text-xs font-semibold text-sky-600 hover:text-sky-700">
+                                                                Pilih file gambar
+                                                                <input name="attachment" type="file"
+                                                                    accept="image/png, image/jpeg, image/jpg"
+                                                                    class="attachment-input sr-only">
+                                                            </label>
+                                                            <p class="attachment-name mt-1 truncate text-[11px] text-gray-400">
+                                                                Format: PNG, JPG, JPEG (Maks. 2MB)
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @error('tickets.' . $i . '.attachment')
+                                                    <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
+                                                @enderror
+                                            </div>
                                         </div>
-                                        <p class="text-[11px] text-gray-400"
-                                            x-text="fileName ? 'Terpilih: ' + fileName : 'Format: PNG, JPG, JPEG (Maks. 2MB)'">
-                                        </p>
-                                    </div>
+                                    @endforeach
                                 </div>
-                                @error('attachment')
-                                    <p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>
-                                @enderror
+
+                                <!-- Tombol tambah baris tiket -->
+                                <button data-repeater-create type="button"
+                                    class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-sky-300 bg-sky-50/50 px-4 py-2.5 text-xs font-bold text-sky-700 transition hover:border-sky-500 hover:bg-sky-50">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Tambah Tiket Lain
+                                </button>
                             </div>
 
                             <!-- Action Buttons -->
@@ -203,38 +212,20 @@
 
                 <!-- Kolom kanan: sidebar bantuan -->
                 <div class="space-y-6 lg:sticky lg:top-6">
-                    
-                    <!-- Ringkasan tiket -->
+
+                    <!-- Ringkasan pengajuan (di-update via jQuery repeater) -->
                     <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-700">Ringkasan</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-700">Ringkasan Pengajuan</h3>
                         <dl class="mt-3 space-y-3 text-xs">
-                            <div class="flex items-start justify-between gap-3">
-                                <dt class="text-gray-500">Judul</dt>
-                                <dd class="text-right font-semibold text-gray-800"
-                                    x-text="title ? title : '—'"></dd>
-                            </div>
                             <div class="flex items-center justify-between gap-3">
-                                <dt class="text-gray-500">Prioritas</dt>
-                                <dd>
-                                    <span
-                                        class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold"
-                                        :class="{
-                                            'bg-emerald-100 text-emerald-700': priority === 'low',
-                                            'bg-amber-100 text-amber-700': priority === 'medium',
-                                            'bg-orange-100 text-orange-700': priority === 'high',
-                                            'bg-rose-100 text-rose-700': priority === 'urgent',
-                                        }"
-                                        x-text="priority.charAt(0).toUpperCase() + priority.slice(1)"></span>
-                                </dd>
-                            </div>
-                            <div class="flex items-center justify-between gap-3">
-                                <dt class="text-gray-500">Lampiran</dt>
-                                <dd class="font-semibold text-gray-800"
-                                    x-text="fileName ? 'Terlampir' : 'Belum ada'"></dd>
+                                <dt class="text-gray-500">Jumlah tiket</dt>
+                                <dd id="summary-count" class="font-semibold text-gray-800">1 tiket</dd>
                             </div>
                         </dl>
+                        <ul id="summary-list" class="mt-3 space-y-1.5 border-t border-gray-100 pt-3 text-xs text-gray-600">
+                            <li class="italic text-gray-400">Belum ada judul tiket.</li>
+                        </ul>
                     </div>
-
 
                     <!-- Panduan prioritas -->
                     <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm">
@@ -267,4 +258,7 @@
             </div>
         </div>
     </div>
+
+    {{-- jquery.repeater: tambah/hapus baris tiket dinamis (di-bundle via Vite, tanpa CDN) --}}
+    @vite('resources/js/ticket-repeater.js')
 </x-app-layout>

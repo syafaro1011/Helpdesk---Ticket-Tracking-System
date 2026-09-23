@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\TicketLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -90,48 +91,79 @@ class TicketController extends Controller
         return view('user.tickets.create', compact('categories'));
     }
 
-    // Menyimpan tiket baru ke database
+    // Menyimpan tiket baru ke database (mendukung multi-tiket via jquery.repeater)
     public function store(Request $request)
     {
-        // Validasi Input
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'priority' => 'required|in:low,medium,high,urgent',
-            'attachment' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Maksimal 2MB
+        // Validasi Input (satu pengajuan bisa berisi 1-10 tiket)
+        $validated = $request->validate([
+            'tickets' => 'required|array|min:1|max:10',
+            'tickets.*.category_id' => 'required|exists:categories,id',
+            'tickets.*.title' => 'required|string|max:255',
+            'tickets.*.description' => 'required|string',
+            'tickets.*.priority' => 'required|in:low,medium,high,urgent',
+            'tickets.*.attachment' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Maksimal 2MB per file
         ]);
 
-        // Handle Upload File/Gambar
-        $attachmentPath = null;
-        if ($request->hasFile('attachment')) {
-            $attachmentPath = $request->file('attachment')->store('tickets', 'public');
+        // Satu pengajuan = satu transaksi: gagal di tengah jalan -> semua batal,
+        // file yang telanjur ter-upload ikut dihapus agar tidak yatim.
+        $storedFiles = [];
+
+        try {
+            $createdCodes = DB::transaction(function () use ($request, $validated, &$storedFiles) {
+                $codes = [];
+
+                foreach ($validated['tickets'] as $index => $ticketData) {
+                    // Handle Upload File/Gambar per tiket
+                    $attachmentPath = null;
+                    $file = $request->file("tickets.$index.attachment");
+                    if ($file && $file->isValid()) {
+                        $attachmentPath = $file->store('tickets', 'public');
+                        $storedFiles[] = $attachmentPath;
+                    }
+
+                    // Generate Kode Tiket Unik (Contoh: TCK-20260901-A1B2)
+                    do {
+                        $ticketCode = 'TCK-' . date('Ymd') . '-' . strtoupper(Str::random(4));
+                    } while (Ticket::where('ticket_code', $ticketCode)->exists());
+
+                    // Simpan ke Database
+                    $ticket = Ticket::create([
+                        'ticket_code' => $ticketCode,
+                        'user_id' => auth()->id(),
+                        'category_id' => $ticketData['category_id'],
+                        'title' => $ticketData['title'],
+                        'description' => $ticketData['description'],
+                        'priority' => $ticketData['priority'],
+                        'status' => 'open',
+                        'attachment' => $attachmentPath,
+                    ]);
+
+                    // Simpan log awal pengajuan
+                    TicketLog::create([
+                        'ticket_id' => $ticket->id,
+                        'user_id' => auth()->id(),
+                        'message' => "Pelapor membuat tiket kendala baru: {$ticketData['title']}",
+                    ]);
+
+                    $codes[] = $ticketCode;
+                }
+
+                return $codes;
+            });
+        } catch (\Throwable $e) {
+            foreach ($storedFiles as $path) {
+                Storage::disk('public')->delete($path);
+            }
+            throw $e;
         }
 
-        // Generate Kode Tiket Unik (Contoh: TCK-20260901-A1B2)
-        $ticketCode = 'TCK-' . date('Ymd') . '-' . strtoupper(Str::random(4));
-
-        // Simpan ke Database
-        $ticket = Ticket::create([
-            'ticket_code' => $ticketCode,
-            'user_id' => auth()->id(),
-            'category_id' => $request->category_id,
-            'title' => $request->title,
-            'description' => $request->description,
-            'priority' => $request->priority,
-            'status' => 'open',
-            'attachment' => $attachmentPath,
-        ]);
-
-        // Simpan log awal pengajuan
-        TicketLog::create([
-            'ticket_id' => $ticket->id,
-            'user_id' => auth()->id(),
-            'message' => "Pelapor membuat tiket kendala baru: {$request->title}",
-        ]);
+        $count = count($createdCodes);
+        $message = $count === 1
+            ? "Tiket {$createdCodes[0]} berhasil dibuat dan sedang menunggu penanganan."
+            : "$count tiket berhasil dibuat dan sedang menunggu penanganan: " . implode(', ', $createdCodes);
 
         return redirect()->route('user.tickets.index')
-            ->with('success', "Tiket $ticketCode berhasil dibuat dan sedang menunggu penanganan.");
+            ->with('success', $message);
     }
 
     // Menampilkan form edit tiket (hanya jika status masih open)
