@@ -100,6 +100,28 @@
                         $crumbs[] = ['label' => 'Kelola Tiket', 'url' => route('tech.tickets.index')];
                         $crumbs[] = ['label' => 'Detail Penanganan'];
                         break;
+                    case 'admin.users.index':
+                        $crumbs[] = ['label' => 'Kelola Pengguna'];
+                        break;
+                    case 'admin.users.create':
+                        $crumbs[] = ['label' => 'Kelola Pengguna', 'url' => route('admin.users.index')];
+                        $crumbs[] = ['label' => 'Tambah Pengguna'];
+                        break;
+                    case 'admin.users.edit':
+                        $crumbs[] = ['label' => 'Kelola Pengguna', 'url' => route('admin.users.index')];
+                        $crumbs[] = ['label' => 'Edit Pengguna'];
+                        break;
+                    case 'admin.categories.index':
+                        $crumbs[] = ['label' => 'Kelola Kategori'];
+                        break;
+                    case 'admin.categories.create':
+                        $crumbs[] = ['label' => 'Kelola Kategori', 'url' => route('admin.categories.index')];
+                        $crumbs[] = ['label' => 'Tambah Kategori'];
+                        break;
+                    case 'admin.categories.edit':
+                        $crumbs[] = ['label' => 'Kelola Kategori', 'url' => route('admin.categories.index')];
+                        $crumbs[] = ['label' => 'Edit Kategori'];
+                        break;
                     case 'profile.edit':
                         $crumbs[] = ['label' => 'Profil'];
                         break;

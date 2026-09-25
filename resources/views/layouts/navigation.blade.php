@@ -87,6 +87,39 @@
                     :class="sidebarCollapsed ? 'lg:opacity-0 lg:w-0 lg:invisible' : 'lg:opacity-100 lg:w-auto lg:visible'">Kelola Tiket</span>
             </a>
         @endif
+
+        @if(auth()->user()->role === 'admin')
+            <p class="px-3 pt-4 pb-1 overflow-hidden transition-all duration-300 ease-in-out"
+                :class="sidebarCollapsed ? 'lg:h-0 lg:py-0 lg:opacity-0' : 'lg:h-auto lg:opacity-100'">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 whitespace-nowrap">Administrator</span>
+            </p>
+
+            <a href="{{ route('admin.users.index') }}" @click="sidebarOpen = false"
+                class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                    {{ request()->routeIs('admin.users.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                title="Kelola Pengguna" :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''">
+                <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('admin.users.*') ? 'text-sky-600' : 'text-slate-400' }}"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <span class="transition-all duration-300 ease-in-out whitespace-nowrap"
+                    :class="sidebarCollapsed ? 'lg:opacity-0 lg:w-0 lg:invisible' : 'lg:opacity-100 lg:w-auto lg:visible'">Kelola Pengguna</span>
+            </a>
+
+            <a href="{{ route('admin.categories.index') }}" @click="sidebarOpen = false"
+                class="relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                    {{ request()->routeIs('admin.categories.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                title="Kelola Kategori" :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''">
+                <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('admin.categories.*') ? 'text-sky-600' : 'text-slate-400' }}"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 7h.01M7 3h5.586a1 1 0 01.707.293l7.414 7.414a1 1 0 010 1.414l-5.586 5.586a1 1 0 01-1.414 0L5.293 10.293A1 1 0 015 9.586V4a1 1 0 011-1z" />
+                </svg>
+                <span class="transition-all duration-300 ease-in-out whitespace-nowrap"
+                    :class="sidebarCollapsed ? 'lg:opacity-0 lg:w-0 lg:invisible' : 'lg:opacity-100 lg:w-auto lg:visible'">Kelola Kategori</span>
+            </a>
+        @endif
     </nav>
 
     {{-- User Profile Section --}}

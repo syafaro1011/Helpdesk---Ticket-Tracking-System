@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\TicketController;
 use App\Http\Controllers\Tech\TicketHandlingController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -37,13 +39,21 @@ Route::middleware(['auth'])->group(function () {
 
     // Fitur Khusus Admin (Master Data & Pengaturan)
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/categories', function () {
-            return 'Halaman Kelola Kategori Kendala';
-        })->name('categories.index');
+        // Kelola Pengguna (User / Teknisi / Admin)
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+        Route::get('/users/{id}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{id}', [AdminUserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{id}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
-        Route::get('/users', function () {
-            return 'Halaman Kelola Pengguna (User/Teknisi)';
-        })->name('users.index');
+        // Kelola Kategori Kendala
+        Route::get('/categories', [AdminCategoryController::class, 'index'])->name('categories.index');
+        Route::get('/categories/create', [AdminCategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categories', [AdminCategoryController::class, 'store'])->name('categories.store');
+        Route::get('/categories/{id}/edit', [AdminCategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categories/{id}', [AdminCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{id}', [AdminCategoryController::class, 'destroy'])->name('categories.destroy');
 
         Route::patch('/tickets/{id}/assign', [TicketHandlingController::class, 'assignTechnician'])->name('tickets.assign');
     });

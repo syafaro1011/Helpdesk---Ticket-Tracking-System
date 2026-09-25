@@ -104,8 +104,7 @@ class TicketController extends Controller
             'tickets.*.attachment' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Maksimal 2MB per file
         ]);
 
-        // Satu pengajuan = satu transaksi: gagal di tengah jalan -> semua batal,
-        // file yang telanjur ter-upload ikut dihapus agar tidak yatim.
+        // Satu pengajuan = satu transaksi: gagal di tengah jalan -> semua batal
         $storedFiles = [];
 
         try {
